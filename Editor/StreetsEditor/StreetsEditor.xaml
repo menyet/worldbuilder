@@ -1,0 +1,89 @@
+﻿<UserControl x:Class="Editor.StreetsEditor.StreetsEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             DataContext="{Binding RelativeSource={RelativeSource Self}}"
+             d:DesignHeight="600" d:DesignWidth="1000">
+    <Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="200" />
+            </Grid.ColumnDefinitions>
+            <Grid>
+
+
+                <ItemsControl ItemsSource="{Binding Map.StreetList}" Background="Green">
+                    <ItemsControl.Template>
+                        <ControlTemplate TargetType="ItemsControl">
+                            <Canvas Background="Gray" IsItemsHost="True" MouseMove="Canvas_MouseMove" MouseUp="Canvas_MouseUp" MouseDown="Canvas_MouseDown" />
+                        </ControlTemplate>
+                    </ItemsControl.Template>
+                    <ItemsControl.ItemTemplate>
+
+                        <DataTemplate>
+                            <Canvas>
+                                <Line X1="{Binding Point1.X}" X2="{Binding Point2.X}" Y1="{Binding Point1.Y}" Y2="{Binding Point2.Y}" Stroke="Red" StrokeThickness="3" />
+
+                                <TextBlock Canvas.Left="{Binding Point1.X}" Canvas.Top="{Binding Point1.Y}" Text="{Binding Name}" />
+
+                                <Line Stroke="{Binding LeftCycle.Color}" Name="LeftSideWalk" X1="{Binding LeftSideWalkPoint1.X}" X2="{Binding LeftSideWalkPoint2.X}" Y1="{Binding LeftSideWalkPoint1.Y}" Y2="{Binding LeftSideWalkPoint2.Y}" StrokeThickness="3" />
+                                <Line Stroke="{Binding RightCycle.Color}" Name="RightSideWalk" X1="{Binding RightSideWalkPoint1.X}" X2="{Binding RightSideWalkPoint2.X}" Y1="{Binding RightSideWalkPoint1.Y}" Y2="{Binding RightSideWalkPoint2.Y}" StrokeThickness="3" />
+
+                                <Ellipse Name="point1" Tag="{Binding Point1}" Canvas.Left="{Binding Point1.X, Mode=TwoWay}" Canvas.Top="{Binding Point1.Y, Mode=TwoWay}" Width="10" Height="10" Stroke="Green" Fill="Green" MouseDown="StreetPoint_MouseDown">
+                                    <Ellipse.RenderTransform>
+                                        <TranslateTransform X="-5" Y="-5" />
+                                    </Ellipse.RenderTransform>
+                                </Ellipse>
+
+                                <Ellipse Name="point2" Tag="{Binding Point2}" Canvas.Left="{Binding Point2.X, Mode=TwoWay}" Canvas.Top="{Binding Point2.Y, Mode=TwoWay}" Width="10" Height="10" Stroke="Green" Fill="Green" MouseDown="StreetPoint_MouseDown">
+                                    <Ellipse.RenderTransform>
+                                        <TranslateTransform X="-5" Y="-5" />
+                                    </Ellipse.RenderTransform>
+                                </Ellipse>
+
+                            </Canvas>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding Point1.IsSelected}" Value="True">
+                                    <Setter Property="Fill" Value="Blue" TargetName="point1" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Point1.IsSelected}" Value="False">
+                                    <Setter Property="Fill" Value="Red" TargetName="point1" />
+                                </DataTrigger>
+
+                                <DataTrigger Binding="{Binding Point2.IsSelected}" Value="True">
+                                    <Setter Property="Fill" Value="Blue" TargetName="point2" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Point2.IsSelected}" Value="False">
+                                    <Setter Property="Fill" Value="Red" TargetName="point2" />
+                                </DataTrigger>
+
+                                <!--<DataTrigger Binding="{Binding RightCycle.IsSelected}" Value="True">
+                                    <Setter Property="Stroke" Value="#0000ff" TargetName="RightSideWalk" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding RightCycle.IsSelected}" Value="False">
+                                    <Setter Property="Stroke" Value="#000077" TargetName="RightSideWalk" />
+                                </DataTrigger>
+
+                                <DataTrigger Binding="{Binding LeftCycle.IsSelected}" Value="True">
+                                    <Setter Property="Stroke" Value="#00ff00" TargetName="LeftSideWalk" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding LeftCycle.IsSelected}" Value="False">
+                                    <Setter Property="Stroke" Value="#007700" TargetName="LeftSideWalk" />
+                                </DataTrigger>-->
+
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+
+                </ItemsControl>
+            </Grid>
+
+            <StackPanel Grid.Column="1">
+                <Button Content="Build sidewalks" Click="BuildSidewalks_Click" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

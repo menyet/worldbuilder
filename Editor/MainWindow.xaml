@@ -1,0 +1,19 @@
+﻿<Window x:Class="Editor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:streetsEditor="clr-namespace:Editor.StreetsEditor"
+        Title="MainWindow" Height="600" Width="800">
+    <Grid>
+        <TabControl>
+            <TabItem>
+                <TabItem.Header>Street editor</TabItem.Header>
+                <TabItem.Content>
+                    <streetsEditor:StreetsEditor></streetsEditor:StreetsEditor>
+                </TabItem.Content>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>Map</TabItem.Header>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
