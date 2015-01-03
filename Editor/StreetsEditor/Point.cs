@@ -1,70 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GalaSoft.MvvmLight;
 
 namespace Editor.StreetsEditor
 {
-    public class Point : NotifyPropertyChanged
+    public class Point : ViewModelBase
     {
-        protected double x;
+        private double _x;
+        private double _y;
+        private double _z;
+        private bool _isSelected;
+
         public double X
         {
-            get { return x; }
-            set
-            {
-                x = value;
-                OnPropertyChanged("X");
-            }
+            get { return _x; }
+            set { Set(() => X, ref _x, value); }
         }
 
-        protected double y;
         public double Y
         {
-            get { return y; }
-            set
-            {
-                y = value;
-                OnPropertyChanged("Y");
-            }
+            get { return _y; }
+            set { Set(() => Y, ref _y, value); }
         }
 
-        protected double z;
         public double Z
         {
-            get { return z; }
-            set 
-            {
-                z = value;
-                OnPropertyChanged("Z");
-            }
+            get { return _z; }
+            set { Set(() => Z, ref _z, value); }
         }
 
-        protected bool isSelected;
         public bool IsSelected
         {
-            get { return isSelected; }
-            set
-            {
-                isSelected = value;
-                OnPropertyChanged("IsSelected");
-            }
+            get { return _isSelected; }
+            set { Set(() => IsSelected, ref _isSelected, value); }
         }
 
-
-        public Point(double X, double Y, double Z)
+        public Point(double x, double y, double z)
         {
-            this.X = X;
-            this.Y = Y;
-            this.Y = Y;
+            X = x;
+            Y = y;
+            Z = z;
         }
 
-        public void SetCoordinates(double X, double Y, double Z)
+        public void SetCoordinates(double x, double y, double z)
         {
-            this.X = X;
-            this.Y = Y;
-            this.Y = Y;
+            X = x;
+            Y = y;
+            Z = z;
         }
 
     }

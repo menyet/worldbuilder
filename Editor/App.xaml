@@ -1,8 +1,13 @@
 ﻿<Application x:Class="Editor.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:editor="clr-namespace:Editor"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+
+        <editor:MultiplyConverter x:Key="MultiplyConverter" />
+        <editor:SumConverter x:Key="SumConverter" />
+        
+        <editor:PositionConverter x:Key="PositionConverter" />
     </Application.Resources>
 </Application>

@@ -44,7 +44,7 @@ namespace Editor.OpenStreetMapImporter
                     };
 
 
-                var point = new Point((n.Longitude - OffsetX)*Scale, (n.Latitude - OffsetY)*Scale, 0.0);
+                var point = new Point((n.Longitude - OffsetX)*Scale, - (n.Latitude - OffsetY)*Scale, 0.0);
 
                 nodes.Add(idElement.Value, new Tuple<Node, Point>(n, point));
 
@@ -55,7 +55,15 @@ namespace Editor.OpenStreetMapImporter
 
             IEnumerable<XElement> wayNodes = xelement.Elements("way");
             // Read the entire XML
-            foreach (var way in wayNodes)
+            foreach (
+                var way in
+                    wayNodes.Where(
+                        wn =>
+                            wn.Elements("tag")
+                                .Any(
+                                    tag =>
+                                        tag.Attribute("k").Value == "highway" &&
+                                        tag.Attribute("v").Value == "residential")))
             {
                 var wayId = way.Attribute("id").Value;
 
@@ -64,7 +72,7 @@ namespace Editor.OpenStreetMapImporter
                 var w = new Way()
                 {
                     Id = wayId,
-                    
+
                     Nodes = nds.Select(nd => nd.Attribute("ref").Value).ToList()
                 };
 
@@ -81,7 +89,7 @@ namespace Editor.OpenStreetMapImporter
 
             
 
-            foreach (var way in ways.Take(100))
+            foreach (var way in ways)
             {
                 string lastNodeId = null;
 
@@ -90,7 +98,7 @@ namespace Editor.OpenStreetMapImporter
                     if (lastNodeId != null)
                     {
                         map.StreetList.Add(
-                            new Street(
+                            new StreetSegment(
                                 nodes[lastNodeId].Item2,
                                 nodes[node].Item2,
                                 "XYZ"));

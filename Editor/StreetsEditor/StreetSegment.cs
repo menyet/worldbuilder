@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Editor.StreetsEditor
 {
-    public class Street : Line
+    public class StreetSegment : Line
     {
         #region LeftSideWalkPoint1
         protected Point leftSideWalkPoint1;
@@ -112,7 +108,7 @@ namespace Editor.StreetsEditor
         #endregion
 
         #region Constructor
-        public Street(Point Point1, Point Point2, string Name) : base(Point1, Point2)
+        public StreetSegment(Point Point1, Point Point2, string Name) : base(Point1, Point2)
         {
             leftSideWalkPoint1 = new Point(0, 0, 0);
             leftSideWalkPoint2 = new Point(0, 0, 0);
@@ -131,47 +127,47 @@ namespace Editor.StreetsEditor
 
 
         #region Next and previous streets
-        protected Street nextLeftStreet;
-        public Street NextLeftStreet
+        private StreetSegment _nextLeftStreetSegment;
+        public StreetSegment NextLeftStreetSegment
         {
-            get { return nextLeftStreet; }
+            get { return _nextLeftStreetSegment; }
             set
             {
-                nextLeftStreet = value;
-                OnPropertyChanged("NextLeftStreet");
+                _nextLeftStreetSegment = value;
+                OnPropertyChanged("NextLeftStreetSegment");
             }
         }
 
-        protected Street nextRightStreet;
-        public Street NextRightStreet
+        private StreetSegment _nextRightStreetSegment;
+        public StreetSegment NextRightStreetSegment
         {
-            get { return nextRightStreet; }
+            get { return _nextRightStreetSegment; }
             set
             {
-                nextRightStreet = value;
-                OnPropertyChanged("NextRightStreet");
+                _nextRightStreetSegment = value;
+                OnPropertyChanged("NextRightStreetSegment");
             }
         }
 
-        protected Street previousLeftStreet;
-        public Street PreviousLeftStreet
+        protected StreetSegment _previousLeftStreetSegment;
+        public StreetSegment PreviousLeftStreetSegment
         {
-            get { return previousLeftStreet; }
+            get { return _previousLeftStreetSegment; }
             set
             {
-                previousLeftStreet = value;
-                OnPropertyChanged("PreviousLeftStreet");
+                _previousLeftStreetSegment = value;
+                OnPropertyChanged("PreviousLeftStreetSegment");
             }
         }
         
-        protected Street previousRightStreet;
-        public Street PreviousRightStreet
+        protected StreetSegment _previousRightStreetSegment;
+        public StreetSegment PreviousRightStreetSegment
         {
-            get { return previousRightStreet; }
+            get { return _previousRightStreetSegment; }
             set
             {
-                previousRightStreet = value;
-                OnPropertyChanged("PreviousRightStreet");
+                _previousRightStreetSegment = value;
+                OnPropertyChanged("PreviousRightStreetSegment");
             }
         }
         #endregion

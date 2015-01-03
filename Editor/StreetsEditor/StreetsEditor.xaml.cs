@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Editor.OpenStreetMapImporter;
 
@@ -27,14 +17,35 @@ namespace Editor.StreetsEditor
 
         public Map Map
         {
-            get
-            {
-                return (Map)GetValue(MapProperty);
-            }
-            set
-            {
-                SetValue(MapProperty, value);
-            }
+            get { return (Map) GetValue(MapProperty); }
+            set { SetValue(MapProperty, value); }
+        }
+
+        public static readonly DependencyProperty ZoomProperty = DependencyProperty.Register(
+            "Zoom", typeof (double), typeof (StreetsEditor), new FrameworkPropertyMetadata(default(double), FrameworkPropertyMetadataOptions.AffectsMeasure));
+
+        public double Zoom
+        {
+            get { return (double) GetValue(ZoomProperty); }
+            set { SetValue(ZoomProperty, value); }
+        }
+
+        public static readonly DependencyProperty OffsetXProperty = DependencyProperty.Register(
+            "OffsetX", typeof (double), typeof (StreetsEditor), new FrameworkPropertyMetadata(default(double), FrameworkPropertyMetadataOptions.AffectsMeasure));
+
+        public double OffsetX
+        {
+            get { return (double) GetValue(OffsetXProperty); }
+            set { SetValue(OffsetXProperty, value); }
+        }
+
+        public static readonly DependencyProperty OffsetYProperty = DependencyProperty.Register(
+            "OffsetY", typeof(double), typeof(StreetsEditor), new FrameworkPropertyMetadata(default(double), FrameworkPropertyMetadataOptions.AffectsMeasure));
+
+        public double OffsetY
+        {
+            get { return (double) GetValue(OffsetYProperty); }
+            set { SetValue(OffsetYProperty, value); }
         }
 
         //public Map Map { get; set; }
@@ -57,10 +68,10 @@ namespace Editor.StreetsEditor
             Point point4 = new Point(200, 200, 0);
 
             
-            Map.StreetList.Add(new Street(point1, point2, "0"));
-            Map.StreetList.Add(new Street(point2, point4, "1"));
-            Map.StreetList.Add(new Street(point4, point3, "2"));
-            Map.StreetList.Add(new Street(point1, point3, "3"));*/
+            Map.StreetList.Add(new StreetSegment(point1, point2, "0"));
+            Map.StreetList.Add(new StreetSegment(point2, point4, "1"));
+            Map.StreetList.Add(new StreetSegment(point4, point3, "2"));
+            Map.StreetList.Add(new StreetSegment(point1, point3, "3"));*/
 
             InitializeComponent();
 
@@ -68,37 +79,37 @@ namespace Editor.StreetsEditor
 
         }
 
-        Point selectedPoint;
-        bool IsMouseDown = false;
+        Point _selectedPoint;
+        bool _isMouseDown = false;
 
         private void StreetPoint_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            IsMouseDown = true;
+            _isMouseDown = true;
 
             if (e.RightButton == MouseButtonState.Pressed)
             {
-                selectedPoint.IsSelected = false;
+                _selectedPoint.IsSelected = false;
                 
-                Ellipse pointEllipse = sender as Ellipse;
-                Point newPoint = pointEllipse.Tag as Point;
-                Map.StreetList.Add(new Street(selectedPoint, newPoint, Map.StreetList.Count().ToString()));
+                var pointEllipse = sender as Ellipse;
+                var newPoint = pointEllipse.Tag as Point;
+                Map.StreetList.Add(new StreetSegment(_selectedPoint, newPoint, Map.StreetList.Count().ToString()));
 
-                selectedPoint = newPoint;
-                selectedPoint.IsSelected = true;
+                _selectedPoint = newPoint;
+                _selectedPoint.IsSelected = true;
 
                 e.Handled = true;
             }
             else
             {
 
-                if (selectedPoint != null)
+                if (_selectedPoint != null)
                 {
-                    selectedPoint.IsSelected = false;
+                    _selectedPoint.IsSelected = false;
                 }
 
-                Ellipse pointEllipse = sender as Ellipse;
-                selectedPoint = pointEllipse.Tag as Point;
-                selectedPoint.IsSelected = true;
+                var pointEllipse = sender as Ellipse;
+                _selectedPoint = pointEllipse.Tag as Point;
+                _selectedPoint.IsSelected = true;
 
                 e.Handled = true;
 
@@ -107,19 +118,38 @@ namespace Editor.StreetsEditor
             }
         }
 
+        private double mouseX;
+        private double mouseY;
+
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
-            if (IsMouseDown && (selectedPoint != null)) 
+            var oldMouseX = mouseX;
+            var oldMouseY = mouseY;
+
+            mouseX = e.GetPosition(sender as Canvas).X;
+            mouseY = e.GetPosition(sender as Canvas).Y;
+
+
+            if (_isMouseDown)
             {
-                selectedPoint.X = e.GetPosition(sender as Canvas).X;
-                selectedPoint.Y = e.GetPosition(sender as Canvas).Y;
+
+                if (_selectedPoint != null)
+                {
+                    _selectedPoint.X = (mouseX - OffsetX)/Zoom;
+                    _selectedPoint.Y = (mouseY - OffsetY)/Zoom;
+                }
+                else
+                {
+                    OffsetX += mouseX - oldMouseX;
+                    OffsetY += mouseY - oldMouseY;
+                }
             }
             
         }
 
         private void Canvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            IsMouseDown = false;
+            _isMouseDown = false;
 
             /*if (selectedPoint != null)
             {
@@ -130,24 +160,24 @@ namespace Editor.StreetsEditor
 
         private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            IsMouseDown = true;
+            _isMouseDown = true;
 
             if (e.RightButton == MouseButtonState.Pressed)
             {
-                selectedPoint.IsSelected = false;
+                _selectedPoint.IsSelected = false;
                 Point newPoint = new Point(e.GetPosition((Canvas)sender).X, e.GetPosition((Canvas)sender).Y, 0);
 
-                Map.StreetList.Add(new Street(selectedPoint, newPoint, Map.StreetList.Count().ToString()));
+                Map.StreetList.Add(new StreetSegment(_selectedPoint, newPoint, Map.StreetList.Count().ToString()));
 
-                selectedPoint = newPoint;
-                selectedPoint.IsSelected = true;
+                _selectedPoint = newPoint;
+                _selectedPoint.IsSelected = true;
             }
             else
             {
-                if (selectedPoint != null)
+                if (_selectedPoint != null)
                 {
-                    selectedPoint.IsSelected = false;
-                    selectedPoint = null;
+                    _selectedPoint.IsSelected = false;
+                    _selectedPoint = null;
                 }
             }
             
@@ -158,5 +188,17 @@ namespace Editor.StreetsEditor
             Map.BuildSideWalks();
         }
 
+
+        private void StreetsEditor_OnMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                Zoom += 0.1;
+            }
+            else
+            {
+                Zoom -= 0.1;
+            }
+        }
     }
 }

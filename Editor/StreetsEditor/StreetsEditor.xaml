@@ -4,8 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
+             x:Name="Root"
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
-             d:DesignHeight="600" d:DesignWidth="1000">
+             d:DesignHeight="600" d:DesignWidth="1000" MouseWheel="StreetsEditor_OnMouseWheel">
     <Grid>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -25,20 +26,110 @@
 
                         <DataTemplate>
                             <Canvas>
-                                <Line X1="{Binding Point1.X}" X2="{Binding Point2.X}" Y1="{Binding Point1.Y}" Y2="{Binding Point2.Y}" Stroke="Red" StrokeThickness="3" />
+                                <Line Stroke="Red" StrokeThickness="3">
 
-                                <TextBlock Canvas.Left="{Binding Point1.X}" Canvas.Top="{Binding Point1.Y}" Text="{Binding Name}" />
+
+                                    <Line.X1>
+                                        <MultiBinding Converter="{StaticResource PositionConverter}">
+                                            <Binding Path="Point1.X" Mode="TwoWay" />
+                                            <Binding Path="Zoom" ElementName="Root" />
+                                            <Binding Path="OffsetX" ElementName="Root" />
+                                        </MultiBinding>
+                                    </Line.X1>
+
+                                    <Line.Y1>
+                                        <MultiBinding Converter="{StaticResource PositionConverter}">
+                                            <Binding Path="Point1.Y" Mode="TwoWay" />
+                                            <Binding Path="Zoom" ElementName="Root" />
+                                            <Binding Path="OffsetY" ElementName="Root" />
+                                        </MultiBinding>
+                                    </Line.Y1>
+
+                                    <Line.X2>
+                                        <MultiBinding Converter="{StaticResource PositionConverter}">
+                                            <Binding Path="Point2.X" Mode="TwoWay" />
+                                            <Binding Path="Zoom" ElementName="Root" />
+                                            <Binding Path="OffsetX" ElementName="Root" />
+                                        </MultiBinding>
+                                    </Line.X2>
+
+                                    <Line.Y2>
+                                        <MultiBinding Converter="{StaticResource PositionConverter}">
+                                            <Binding Path="Point2.Y" Mode="TwoWay" />
+                                            <Binding Path="Zoom" ElementName="Root" />
+                                            <Binding Path="OffsetY" ElementName="Root" />
+                                        </MultiBinding>
+                                    </Line.Y2>
+
+
+
+                                </Line>
+
+                                <TextBlock Text="{Binding Name}">
+                                    
+                                    <Canvas.Left>
+                                        <MultiBinding Converter="{StaticResource PositionConverter}" >
+                                            <Binding Path="Point1.X" Mode="TwoWay" />
+                                            <Binding Path="Zoom" ElementName="Root" />
+                                            <Binding Path="OffsetX" ElementName="Root" />
+                                        </MultiBinding>
+                                    </Canvas.Left>
+                                    
+                                    <Canvas.Top>
+                                        <MultiBinding Converter="{StaticResource PositionConverter}" >
+                                            <Binding Path="Point1.Y" Mode="TwoWay" />
+                                            <Binding Path="Zoom" ElementName="Root" />
+                                            <Binding Path="OffsetY" ElementName="Root" />
+                                        </MultiBinding>
+                                    </Canvas.Top>
+                                    
+                                    
+                                </TextBlock>
 
                                 <Line Stroke="{Binding LeftCycle.Color}" Name="LeftSideWalk" X1="{Binding LeftSideWalkPoint1.X}" X2="{Binding LeftSideWalkPoint2.X}" Y1="{Binding LeftSideWalkPoint1.Y}" Y2="{Binding LeftSideWalkPoint2.Y}" StrokeThickness="3" />
                                 <Line Stroke="{Binding RightCycle.Color}" Name="RightSideWalk" X1="{Binding RightSideWalkPoint1.X}" X2="{Binding RightSideWalkPoint2.X}" Y1="{Binding RightSideWalkPoint1.Y}" Y2="{Binding RightSideWalkPoint2.Y}" StrokeThickness="3" />
 
-                                <Ellipse Name="point1" Tag="{Binding Point1}" Canvas.Left="{Binding Point1.X, Mode=TwoWay}" Canvas.Top="{Binding Point1.Y, Mode=TwoWay}" Width="10" Height="10" Stroke="Green" Fill="Green" MouseDown="StreetPoint_MouseDown">
+                                <Ellipse Name="point1" Tag="{Binding Point1}"  Width="10" Height="10" Stroke="Green" Fill="Green" MouseDown="StreetPoint_MouseDown">
+                                    <Canvas.Left>
+                                        <MultiBinding Converter="{StaticResource PositionConverter}" >
+                                            <Binding Path="Point1.X" Mode="TwoWay" />
+                                            <Binding Path="Zoom" ElementName="Root" />
+                                            <Binding Path="OffsetX" ElementName="Root" />
+                                        </MultiBinding>
+                                    </Canvas.Left>
+                                    
+                                    <Canvas.Top>
+                                        <MultiBinding Converter="{StaticResource PositionConverter}" >
+                                            <Binding Path="Point1.Y" Mode="TwoWay" />
+                                            <Binding Path="Zoom" ElementName="Root" />
+                                            <Binding Path="OffsetY" ElementName="Root" />
+                                        </MultiBinding>
+                                    </Canvas.Top>
+                                    
                                     <Ellipse.RenderTransform>
                                         <TranslateTransform X="-5" Y="-5" />
                                     </Ellipse.RenderTransform>
                                 </Ellipse>
 
-                                <Ellipse Name="point2" Tag="{Binding Point2}" Canvas.Left="{Binding Point2.X, Mode=TwoWay}" Canvas.Top="{Binding Point2.Y, Mode=TwoWay}" Width="10" Height="10" Stroke="Green" Fill="Green" MouseDown="StreetPoint_MouseDown">
+                                <Ellipse Name="point2" Tag="{Binding Point2}" Width="10" Height="10" Stroke="Green" Fill="Green" MouseDown="StreetPoint_MouseDown">
+
+                                    <Canvas.Left>
+                                        <MultiBinding Converter="{StaticResource PositionConverter}" >
+                                            <Binding Path="Point2.X" Mode="TwoWay" />
+                                            <Binding Path="Zoom" ElementName="Root" />
+                                            <Binding Path="OffsetX" ElementName="Root" />
+                                        </MultiBinding>
+                                    </Canvas.Left>
+
+                                    <Canvas.Top>
+                                        <MultiBinding Converter="{StaticResource PositionConverter}" >
+                                            <Binding Path="Point2.Y" Mode="TwoWay" />
+                                            <Binding Path="Zoom" ElementName="Root" />
+                                            <Binding Path="OffsetY" ElementName="Root" />
+                                        </MultiBinding>
+                                    </Canvas.Top>
+
+
                                     <Ellipse.RenderTransform>
                                         <TranslateTransform X="-5" Y="-5" />
                                     </Ellipse.RenderTransform>

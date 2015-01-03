@@ -4,8 +4,8 @@ namespace Editor.StreetsEditor
 {
     public class Cycle : NotifyPropertyChanged
     {
-        protected List<Street> streetList = new List<Street>();
-        public List<Street> StreetList;
+        protected List<StreetSegment> streetList = new List<StreetSegment>();
+        public List<StreetSegment> StreetList;
 
         protected bool isSelected;
         public bool IsSelected

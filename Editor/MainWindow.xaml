@@ -6,7 +6,7 @@
     <Grid>
         <TabControl>
             <TabItem>
-                <TabItem.Header>Street editor</TabItem.Header>
+                <TabItem.Header>StreetSegment editor</TabItem.Header>
                 <TabItem.Content>
                     <streetsEditor:StreetsEditor></streetsEditor:StreetsEditor>
                 </TabItem.Content>

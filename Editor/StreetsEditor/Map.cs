@@ -14,15 +14,15 @@ namespace Editor.StreetsEditor
 
 		protected ObservableCollection<Cycle> cycleList = new ObservableCollection<Cycle>();
 
-		protected ObservableCollection<Street> streetList = new ObservableCollection<Street>();
-		public ObservableCollection<Street> StreetList
+		protected ObservableCollection<StreetSegment> streetList = new ObservableCollection<StreetSegment>();
+		public ObservableCollection<StreetSegment> StreetList
 		{
 			get { return streetList; }
 		}
 
-		public Street GetStreetByPoints(Point Point1, Point Point2)
+		public StreetSegment GetStreetByPoints(Point Point1, Point Point2)
 		{
-			foreach (Street street in StreetList)
+			foreach (StreetSegment street in StreetList)
 			{
 				if ((street.Point1 == Point1) && (street.Point2 == Point2))
 				{
@@ -36,11 +36,11 @@ namespace Editor.StreetsEditor
 			return null;
 		}
 
-		public List<Street> GetStreetsByPoint(Point Point)
+		public List<StreetSegment> GetStreetsByPoint(Point Point)
 		{
-			List<Street> list = new List<Street>();
+			List<StreetSegment> list = new List<StreetSegment>();
 
-			foreach (Street street in StreetList)
+			foreach (StreetSegment street in StreetList)
 			{
 				if ((street.Point1 == Point) || (street.Point2 == Point))
 				{
@@ -55,22 +55,22 @@ namespace Editor.StreetsEditor
 		{
 			byte c = 0;
 
-			foreach (Street street in streetList)
+			foreach (StreetSegment street in streetList)
 			{
 				c += 50;
 
 
-				Street actualStreet = street;
+				StreetSegment actualStreetSegment = street;
 
-				if (actualStreet.RightCycle != null)
+				if (actualStreetSegment.RightCycle != null)
 				{
 					continue;
 				}
 
-				Point actualPoint = actualStreet.Point1;
-				Point nextPoint = actualStreet.Point2;
+				Point actualPoint = actualStreetSegment.Point1;
+				Point nextPoint = actualStreetSegment.Point2;
 
-				Point firstPoint = actualStreet.Point1;
+				Point firstPoint = actualStreetSegment.Point1;
 
 
 				Cycle rightCycle = new Cycle();
@@ -80,19 +80,19 @@ namespace Editor.StreetsEditor
 
 				rightCycle.IsSelected = true;
 
-				actualStreet.RightCycle = rightCycle;
+				actualStreetSegment.RightCycle = rightCycle;
 
-				actualStreet.IsSelected = true;
+				actualStreetSegment.IsSelected = true;
 
 				do
 				{
-					Street nextStreet = null;
+					StreetSegment nextStreetSegment = null;
 					double angle = 1000;
-					foreach (Street tmpStreet in GetStreetsByPoint(nextPoint))
+					foreach (StreetSegment tmpStreet in GetStreetsByPoint(nextPoint))
 					{
 
 
-						if (tmpStreet != actualStreet)
+						if (tmpStreet != actualStreetSegment)
 						{
 							Vector v1 = new Vector(actualPoint.X - nextPoint.X, actualPoint.Y - nextPoint.Y);
 							Vector v2 = new Vector(tmpStreet.Point2.X - tmpStreet.Point1.X, tmpStreet.Point2.Y - tmpStreet.Point1.Y);
@@ -110,25 +110,25 @@ namespace Editor.StreetsEditor
 							if (tmpAngle < angle)
 							{
 								angle = tmpAngle;
-								nextStreet = tmpStreet;
+								nextStreetSegment = tmpStreet;
 							}
 						}
 					}
 
-					actualStreet = nextStreet;
+					actualStreetSegment = nextStreetSegment;
 
-					if (nextPoint == nextStreet.Point1)
+					if (nextPoint == nextStreetSegment.Point1)
 					{
-						actualStreet.RightCycle = rightCycle;
+						actualStreetSegment.RightCycle = rightCycle;
 					}
 					else
 					{
-						actualStreet.LeftCycle = rightCycle;
+						actualStreetSegment.LeftCycle = rightCycle;
 					}
 
 
-					actualPoint = (nextPoint == nextStreet.Point1) ? nextStreet.Point1 : nextStreet.Point2;
-					nextPoint = (nextPoint == nextStreet.Point1) ? nextStreet.Point2 : nextStreet.Point1;
+					actualPoint = (nextPoint == nextStreetSegment.Point1) ? nextStreetSegment.Point1 : nextStreetSegment.Point2;
+					nextPoint = (nextPoint == nextStreetSegment.Point1) ? nextStreetSegment.Point2 : nextStreetSegment.Point1;
 				} while (nextPoint != firstPoint);
 
 
@@ -143,11 +143,11 @@ namespace Editor.StreetsEditor
 			//foreach (Cycle cycle in cycleList)
 			//{
 			//	int index = 0;
-			//	Street actualStreet = cycle.StreetList.ElementAt(index);
+			//	StreetSegment actualStreet = cycle.StreetList.ElementAt(index);
 
 			//	while (index < cycle.StreetList.Count)
 			//	{
-			//		Street nextStreet = cycle.StreetList.ElementAt((index + 1) % cycle.StreetList.Count);
+			//		StreetSegment nextStreet = cycle.StreetList.ElementAt((index + 1) % cycle.StreetList.Count);
 
 			//		double dX1 = actualStreet.RightSideWalkPoint1.X - actualStreet.RightSideWalkPoint2.X;
 			//		double dX2 = nextStreet.RightSideWalkPoint1.X - nextStreet.RightSideWalkPoint2.X;
@@ -170,9 +170,9 @@ namespace Editor.StreetsEditor
 
 
 
-			//foreach (Street street1 in streetList)
+			//foreach (StreetSegment street1 in streetList)
 			//{
-			//    foreach (Street street2 in streetList)
+			//    foreach (StreetSegment street2 in streetList)
 			//    {
 			//        double dX1 = street1.RightSideWalkPoint1.X - street1.RightSideWalkPoint2.X;
 			//        double dX2 = street2.RightSideWalkPoint1.X - street2.RightSideWalkPoint2.X;
