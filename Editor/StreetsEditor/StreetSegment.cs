@@ -5,123 +5,123 @@ namespace Editor.StreetsEditor
     public class StreetSegment : Line
     {
         #region LeftSideWalkPoint1
-        protected Point leftSideWalkPoint1;
+        private Point _leftSideWalkPoint1;
         public Point LeftSideWalkPoint1
         {
-            get { return leftSideWalkPoint1; }
+            get { return _leftSideWalkPoint1; }
             set
             {
-                leftSideWalkPoint1 = value;
+                _leftSideWalkPoint1 = value;
                 OnPropertyChanged("LeftSideWalkPoint1");
             }
         }
         #endregion
 
         #region LeftSideWalkPoint2
-        protected Point leftSideWalkPoint2;
+        private Point _leftSideWalkPoint2;
         public Point LeftSideWalkPoint2
         {
-            get { return leftSideWalkPoint2; }
+            get { return _leftSideWalkPoint2; }
             set
             {
-                leftSideWalkPoint2 = value;
+                _leftSideWalkPoint2 = value;
                 OnPropertyChanged("LeftSideWalkPoint2");
             }
         }
         #endregion
 
         #region RightSideWalkPoint1
-        protected Point rightSideWalkPoint1;
+        private Point _rightSideWalkPoint1;
         public Point RightSideWalkPoint1
         {
-            get { return rightSideWalkPoint1; }
+            get { return _rightSideWalkPoint1; }
             set
             {
-                rightSideWalkPoint1 = value;
+                _rightSideWalkPoint1 = value;
                 OnPropertyChanged("RightSideWalkPoint1");
             }
         }
         #endregion
 
         #region RightSideWalkPoint2
-        protected Point rightSideWalkPoint2;
+        private Point _rightSideWalkPoint2;
         public Point RightSideWalkPoint2
         {
-            get { return rightSideWalkPoint2; }
+            get { return _rightSideWalkPoint2; }
             set
             {
-                rightSideWalkPoint2 = value;
+                _rightSideWalkPoint2 = value;
                 OnPropertyChanged("RightSideWalkPoint2");
             }
         }
         #endregion
 
         #region RightCycle
-        protected Cycle rightCycle;
+        private Cycle _rightCycle;
         public Cycle RightCycle
         {
-            get { return rightCycle; }
+            get { return _rightCycle; }
             set
             {
-                rightCycle = value;
+                _rightCycle = value;
                 OnPropertyChanged("RightCycle");
             }
         }
         #endregion
         #region LeftCycle
-        protected Cycle leftCycle;
+        private Cycle _leftCycle;
         public Cycle LeftCycle
         {
-            get { return leftCycle; }
+            get { return _leftCycle; }
             set
             {
-                leftCycle = value;
+                _leftCycle = value;
                 OnPropertyChanged("LeftCycle");
             }
         }
         #endregion
 
         #region IsSelected
-        protected bool isSelected;
+        private bool _isSelected;
         public bool IsSelected
         {
-            get { return isSelected; }
+            get { return _isSelected; }
             set
             {
-                isSelected = value;
+                _isSelected = value;
                 OnPropertyChanged("IsSelected");
             }
         }
         #endregion
 
         #region Name
-        protected string name;
+        private string _name;
         public string Name
         {
-            get { return name; }
+            get { return _name; }
             set
             {
-                name = value;
+                _name = value;
                 OnPropertyChanged("Name");
             }
         }
         #endregion
 
         #region Constructor
-        public StreetSegment(Point Point1, Point Point2, string Name) : base(Point1, Point2)
+        public StreetSegment(Point point1, Point point2, string name) : base(point1, point2)
         {
-            leftSideWalkPoint1 = new Point(0, 0, 0);
-            leftSideWalkPoint2 = new Point(0, 0, 0);
+            _leftSideWalkPoint1 = new Point(0, 0, 0);
+            _leftSideWalkPoint2 = new Point(0, 0, 0);
 
-            rightSideWalkPoint1 = new Point(0, 0, 0);
-            rightSideWalkPoint2 = new Point(0, 0, 0);
+            _rightSideWalkPoint1 = new Point(0, 0, 0);
+            _rightSideWalkPoint2 = new Point(0, 0, 0);
 
-            this.Name = Name;
+            Name = name;
 
-            calculateSideWalk();
+            CalculateSideWalk();
 
-            Point1.PropertyChanged += Point_PropertyChanged;
-            Point2.PropertyChanged += Point_PropertyChanged;
+            point1.PropertyChanged += Point_PropertyChanged;
+            point2.PropertyChanged += Point_PropertyChanged;
         }
         #endregion
 
@@ -149,7 +149,7 @@ namespace Editor.StreetsEditor
             }
         }
 
-        protected StreetSegment _previousLeftStreetSegment;
+        private StreetSegment _previousLeftStreetSegment;
         public StreetSegment PreviousLeftStreetSegment
         {
             get { return _previousLeftStreetSegment; }
@@ -159,8 +159,8 @@ namespace Editor.StreetsEditor
                 OnPropertyChanged("PreviousLeftStreetSegment");
             }
         }
-        
-        protected StreetSegment _previousRightStreetSegment;
+
+        private StreetSegment _previousRightStreetSegment;
         public StreetSegment PreviousRightStreetSegment
         {
             get { return _previousRightStreetSegment; }
@@ -174,29 +174,29 @@ namespace Editor.StreetsEditor
 
         private void Point_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            calculateSideWalk();
+            CalculateSideWalk();
         }
 
         #region CalculateSideWalk
 
-        protected void calculateSideWalk() 
+        protected void CalculateSideWalk() 
         {
 
 
-            Point normal = new Point(Point1.Y - Point2.Y, -Point1.X + Point2.X, 0);
+            var normal = new Point(Point1.Y - Point2.Y, -Point1.X + Point2.X, 0);
 
-            double length = Math.Sqrt(normal.X * normal.X + normal.Y * normal.Y);
+            var length = Math.Sqrt(normal.X * normal.X + normal.Y * normal.Y);
 
             normal.X = normal.X / length;
             normal.Y = normal.Y / length;
 
-            double size = 30;
+            const double size = 30;
 
-            rightSideWalkPoint1.SetCoordinates(Point1.X + normal.X * size, Point1.Y + normal.Y * size, 0.0);
-            rightSideWalkPoint2.SetCoordinates(Point2.X + normal.X * size, Point2.Y + normal.Y * size, 0.0);
+            _rightSideWalkPoint1.SetCoordinates(Point1.X + normal.X * size, Point1.Y + normal.Y * size, 0.0);
+            _rightSideWalkPoint2.SetCoordinates(Point2.X + normal.X * size, Point2.Y + normal.Y * size, 0.0);
 
-            leftSideWalkPoint1.SetCoordinates(Point1.X - normal.X * size, Point1.Y - normal.Y * size, 0.0);
-            leftSideWalkPoint2.SetCoordinates(Point2.X - normal.X * size, Point2.Y - normal.Y * size, 0.0);
+            _leftSideWalkPoint1.SetCoordinates(Point1.X - normal.X * size, Point1.Y - normal.Y * size, 0.0);
+            _leftSideWalkPoint2.SetCoordinates(Point2.X - normal.X * size, Point2.Y - normal.Y * size, 0.0);
 
         }
 

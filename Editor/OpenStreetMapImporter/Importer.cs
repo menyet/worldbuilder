@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Globalization;
+using System.Xml.Linq;
+using Editor.StreetsEditor;
 
 namespace Editor.OpenStreetMapImporter
 {
-    using System.Globalization;
-    using System.Xml.Linq;
-
-    using Editor.StreetsEditor;
 
     class Importer
     {
@@ -36,7 +35,7 @@ namespace Editor.OpenStreetMapImporter
                     var longitude = double.Parse(lonElement.Value, CultureInfo.InvariantCulture);
                     var latitude = double.Parse(latElement.Value, CultureInfo.InvariantCulture);
                     
-                    var n = new Node()
+                    var n = new Node
                     {
                         Id = idElement.Value,
                         Longitude = longitude,
@@ -69,7 +68,7 @@ namespace Editor.OpenStreetMapImporter
 
                 var nds = way.Elements("nd");
 
-                var w = new Way()
+                var w = new Way
                 {
                     Id = wayId,
 

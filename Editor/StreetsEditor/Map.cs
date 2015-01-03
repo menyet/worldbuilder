@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 //using Editor.StreetsEditor.Classes;
 
@@ -12,23 +10,24 @@ namespace Editor.StreetsEditor
 	public class Map
 	{
 
-		protected ObservableCollection<Cycle> cycleList = new ObservableCollection<Cycle>();
+		private readonly ObservableCollection<Cycle> _cycleList = new ObservableCollection<Cycle>();
 
-		protected ObservableCollection<StreetSegment> streetList = new ObservableCollection<StreetSegment>();
+        private readonly ObservableCollection<StreetSegment> _streetList = new ObservableCollection<StreetSegment>();
 		public ObservableCollection<StreetSegment> StreetList
 		{
-			get { return streetList; }
+			get { return _streetList; }
 		}
 
-		public StreetSegment GetStreetByPoints(Point Point1, Point Point2)
+		public StreetSegment GetStreetByPoints(Point point1, Point point2)
 		{
 			foreach (StreetSegment street in StreetList)
 			{
-				if ((street.Point1 == Point1) && (street.Point2 == Point2))
+				if ((street.Point1 == point1) && (street.Point2 == point2))
 				{
 					return street;
 				}
-				else if ((street.Point1 == Point2) && (street.Point2 == Point1))
+
+				if ((street.Point1 == point2) && (street.Point2 == point1))
 				{
 					return street;
 				}
@@ -36,45 +35,36 @@ namespace Editor.StreetsEditor
 			return null;
 		}
 
-		public List<StreetSegment> GetStreetsByPoint(Point Point)
+		public List<StreetSegment> GetStreetsByPoint(Point point)
 		{
-			List<StreetSegment> list = new List<StreetSegment>();
-
-			foreach (StreetSegment street in StreetList)
-			{
-				if ((street.Point1 == Point) || (street.Point2 == Point))
-				{
-					list.Add(street);
-				}
-			}
-			return list;
+		    return StreetList.Where(street => (street.Point1 == point) || (street.Point2 == point)).ToList();
 		}
 
 
-		public void BuildSideWalks()
+	    public void BuildSideWalks()
 		{
 			byte c = 0;
 
-			foreach (StreetSegment street in streetList)
+			foreach (StreetSegment street in _streetList)
 			{
 				c += 50;
 
 
-				StreetSegment actualStreetSegment = street;
+				var actualStreetSegment = street;
 
 				if (actualStreetSegment.RightCycle != null)
 				{
 					continue;
 				}
 
-				Point actualPoint = actualStreetSegment.Point1;
-				Point nextPoint = actualStreetSegment.Point2;
+				var actualPoint = actualStreetSegment.Point1;
+				var nextPoint = actualStreetSegment.Point2;
 
-				Point firstPoint = actualStreetSegment.Point1;
+				var firstPoint = actualStreetSegment.Point1;
 
 
-				Cycle rightCycle = new Cycle();
-				cycleList.Add(rightCycle);
+				var rightCycle = new Cycle();
+				_cycleList.Add(rightCycle);
 
 				rightCycle.Color = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(c, c, 40));
 
@@ -94,8 +84,8 @@ namespace Editor.StreetsEditor
 
 						if (tmpStreet != actualStreetSegment)
 						{
-							Vector v1 = new Vector(actualPoint.X - nextPoint.X, actualPoint.Y - nextPoint.Y);
-							Vector v2 = new Vector(tmpStreet.Point2.X - tmpStreet.Point1.X, tmpStreet.Point2.Y - tmpStreet.Point1.Y);
+							var v1 = new Vector(actualPoint.X - nextPoint.X, actualPoint.Y - nextPoint.Y);
+							var v2 = new Vector(tmpStreet.Point2.X - tmpStreet.Point1.X, tmpStreet.Point2.Y - tmpStreet.Point1.Y);
 
 							if (tmpStreet.Point2 == nextPoint)
 							{

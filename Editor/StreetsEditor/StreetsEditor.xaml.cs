@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -10,7 +11,7 @@ namespace Editor.StreetsEditor
     /// <summary>
     /// Interaction logic for StreetsEditor.xaml
     /// </summary>
-    public partial class StreetsEditor : UserControl
+    public partial class StreetsEditor
     {
 
         public static readonly DependencyProperty MapProperty = DependencyProperty.Register("Map", typeof(Map), typeof(StreetsEditor), new PropertyMetadata(default(Map)));
@@ -50,12 +51,6 @@ namespace Editor.StreetsEditor
 
         //public Map Map { get; set; }
 
-        protected string h = "Asd:";
-        public string H 
-        {
-            get { return h; }
-        }
-
         public StreetsEditor()
         {
             //Map = new Map();
@@ -80,7 +75,7 @@ namespace Editor.StreetsEditor
         }
 
         Point _selectedPoint;
-        bool _isMouseDown = false;
+        bool _isMouseDown;
 
         private void StreetPoint_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -92,7 +87,7 @@ namespace Editor.StreetsEditor
                 
                 var pointEllipse = sender as Ellipse;
                 var newPoint = pointEllipse.Tag as Point;
-                Map.StreetList.Add(new StreetSegment(_selectedPoint, newPoint, Map.StreetList.Count().ToString()));
+                Map.StreetList.Add(new StreetSegment(_selectedPoint, newPoint, Map.StreetList.Count().ToString(CultureInfo.InvariantCulture)));
 
                 _selectedPoint = newPoint;
                 _selectedPoint.IsSelected = true;
@@ -118,16 +113,16 @@ namespace Editor.StreetsEditor
             }
         }
 
-        private double mouseX;
-        private double mouseY;
+        private double _mouseX;
+        private double _mouseY;
 
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
-            var oldMouseX = mouseX;
-            var oldMouseY = mouseY;
+            var oldMouseX = _mouseX;
+            var oldMouseY = _mouseY;
 
-            mouseX = e.GetPosition(sender as Canvas).X;
-            mouseY = e.GetPosition(sender as Canvas).Y;
+            _mouseX = e.GetPosition(sender as Canvas).X;
+            _mouseY = e.GetPosition(sender as Canvas).Y;
 
 
             if (_isMouseDown)
@@ -135,13 +130,13 @@ namespace Editor.StreetsEditor
 
                 if (_selectedPoint != null)
                 {
-                    _selectedPoint.X = (mouseX - OffsetX)/Zoom;
-                    _selectedPoint.Y = (mouseY - OffsetY)/Zoom;
+                    _selectedPoint.X = (_mouseX - OffsetX)/Zoom;
+                    _selectedPoint.Y = (_mouseY - OffsetY)/Zoom;
                 }
                 else
                 {
-                    OffsetX += mouseX - oldMouseX;
-                    OffsetY += mouseY - oldMouseY;
+                    OffsetX += _mouseX - oldMouseX;
+                    OffsetY += _mouseY - oldMouseY;
                 }
             }
             
@@ -165,9 +160,10 @@ namespace Editor.StreetsEditor
             if (e.RightButton == MouseButtonState.Pressed)
             {
                 _selectedPoint.IsSelected = false;
-                Point newPoint = new Point(e.GetPosition((Canvas)sender).X, e.GetPosition((Canvas)sender).Y, 0);
+                var newPoint = new Point(e.GetPosition((Canvas)sender).X, e.GetPosition((Canvas)sender).Y, 0);
 
-                Map.StreetList.Add(new StreetSegment(_selectedPoint, newPoint, Map.StreetList.Count().ToString()));
+                Map.StreetList.Add(new StreetSegment(_selectedPoint, newPoint,
+                    Map.StreetList.Count().ToString(CultureInfo.InvariantCulture)));
 
                 _selectedPoint = newPoint;
                 _selectedPoint.IsSelected = true;
