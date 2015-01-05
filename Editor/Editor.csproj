@@ -81,6 +81,8 @@
     <Compile Include="StreetsEditor\Line.cs" />
     <Compile Include="StreetsEditor\Map.cs" />
     <Compile Include="StreetsEditor\Point.cs" />
+    <Compile Include="StreetsEditor\Street.cs" />
+    <Compile Include="StreetsEditor\StreetsEditorOptimized.cs" />
     <Compile Include="StreetsEditor\StreetSegment.cs" />
     <Compile Include="StreetsEditor\StreetsEditor.xaml.cs">
       <DependentUpon>StreetsEditor.xaml</DependentUpon>

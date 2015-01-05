@@ -126,6 +126,8 @@ namespace Editor.StreetsEditor
         #endregion
 
 
+        public Street Street { get; set; }
+
         #region Next and previous streets
         private StreetSegment _nextLeftStreetSegment;
         public StreetSegment NextLeftStreetSegment

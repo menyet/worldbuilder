@@ -22,6 +22,7 @@ namespace Editor.OpenStreetMapImporter
 
 
             var ways = new List<Way>();
+            var streets = new Dictionary<string, Street>();
 
             XElement xelement = XElement.Load(filePath);
             IEnumerable<XElement> employees = xelement.Elements("node");
@@ -61,8 +62,7 @@ namespace Editor.OpenStreetMapImporter
                             wn.Elements("tag")
                                 .Any(
                                     tag =>
-                                        tag.Attribute("k").Value == "highway" &&
-                                        tag.Attribute("v").Value == "residential")))
+                                        tag.Attribute("k").Value == "highway")))
             {
                 var wayId = way.Attribute("id").Value;
 
@@ -74,6 +74,21 @@ namespace Editor.OpenStreetMapImporter
 
                     Nodes = nds.Select(nd => nd.Attribute("ref").Value).ToList()
                 };
+
+
+                var nameTag = way.Elements("tag").SingleOrDefault(tag => tag.Attribute("k").Value == "name");
+
+                if (nameTag != null)
+                {
+                    var streetName = nameTag.Attribute("v").Value;
+
+                    if (!streets.ContainsKey(streetName))
+                    {
+                        streets[streetName] = new Street() { Name = streetName };
+                    }
+
+                    w.Street = streets[streetName];
+                }
 
                 //Console.WriteLine(w.Id);
 
@@ -95,12 +110,18 @@ namespace Editor.OpenStreetMapImporter
                 foreach (var node in way.Nodes)
                 {
                     if (lastNodeId != null)
+
                     {
-                        map.StreetList.Add(
-                            new StreetSegment(
+
+                        var streetSegment = new StreetSegment(
                                 nodes[lastNodeId].Item2,
                                 nodes[node].Item2,
-                                "XYZ"));
+                                "XYZ");
+                        streetSegment.Street = way.Street;
+
+                        map.StreetList.Add(streetSegment);
+
+
                     }
 
                     lastNodeId = node;
