@@ -27,7 +27,7 @@ namespace Editor.StreetsEditor
         private RenderCubes.RenderCube MainCube { get; }
 
         public static readonly DependencyProperty ZoomProperty = DependencyProperty.Register(
-            "Zoom", typeof(double), typeof(StreetsEditor), new FrameworkPropertyMetadata(1.0, FrameworkPropertyMetadataOptions.AffectsMeasure));
+            "Zoom", typeof(double), typeof(StreetsEditor), new FrameworkPropertyMetadata(3.0, FrameworkPropertyMetadataOptions.AffectsMeasure));
 
         public double Zoom
         {
@@ -61,7 +61,7 @@ namespace Editor.StreetsEditor
 
         public StreetsEditorOptimized()
         {
-            Map = new Importer().Import("C:\\map\\map.osm");
+            Map = new Importer().Import("C:\\map\\map");
             
             MouseMove += OnMouseMove;
             MouseDown += OnMouseDown;
@@ -155,6 +155,22 @@ namespace Editor.StreetsEditor
             return finalSize;
         }
 
+        Pen pen = new Pen(new SolidColorBrush(Color.FromRgb(0, 0, 0)), 1.0);
+
+        Pen RedPen = new Pen(new SolidColorBrush(Color.FromRgb(150, 0, 0)), 3.0);
+
+        const double padding = 200;
+
+        double viewportLeft = padding;
+        double viewportTop = padding;
+
+        double viewportRight => ActualWidth - padding;
+        double viewportBottom => ActualHeight - padding;
+
+        double viewportWidth => viewportRight - viewportLeft;
+        double viewportHeight => viewportBottom - viewportTop;
+
+
         protected override void OnRender(DrawingContext drawingContext)
         {
             base.OnRender(drawingContext);
@@ -164,7 +180,24 @@ namespace Editor.StreetsEditor
                 new Pen(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), 1.0),
                 new Rect(0, 0, ActualWidth, ActualHeight));
 
+
             RenderNodes(MainCube, drawingContext);
+
+            drawingContext.DrawRectangle(
+                new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)),
+                RedPen,
+                new Rect(viewportLeft, viewportTop, viewportWidth, viewportHeight));
+
+            //var minX = (viewportLeft - 500) / Zoom - OffsetX;
+            //var maxX = (viewportRight - 500) / Zoom - OffsetX;
+
+            //var minY = (viewportTop - 500) / Zoom - OffsetY;
+            //var maxY = (viewportBottom - 500) / Zoom - OffsetY;
+
+            //Console.WriteLine($"MinX  {minX} maxX  {maxX} MinY  {minY} MaxY  {maxY}");
+
+            //Console.WriteLine($"RMinX {MainCube.MinX} RmaxX {MainCube.MaxX} RMinY {MainCube.MinY} RMaxY {MainCube.MaxY}");
+
 
 
 
@@ -174,13 +207,13 @@ namespace Editor.StreetsEditor
                 if (streetSegment.Street != null)
                 {
 
-                    FormattedText formattedText = new FormattedText(
-                        streetSegment.Street.Name,
-                        CultureInfo.GetCultureInfo("en-us"),
-                        FlowDirection.LeftToRight,
-                        new Typeface("Verdana"),
-                        32,
-                        Brushes.Black);
+                    //FormattedText formattedText = new FormattedText(
+                    //    streetSegment.Street.Name,
+                    //    CultureInfo.GetCultureInfo("en-us"),
+                    //    FlowDirection.LeftToRight,
+                    //    new Typeface("Verdana"),
+                    //    32,
+                    //    Brushes.Black);
 
 
                     /*drawingContext.DrawText(
@@ -189,14 +222,14 @@ namespace Editor.StreetsEditor
 
                 }
 
-                drawingContext.DrawLine(
-                    new Pen(new SolidColorBrush(Color.FromRgb(0, 0, 0)), 1.0),
-                    new System.Windows.Point(
-                        streetSegment.Point1.X * Zoom + 500 + OffsetX * Zoom,
-                        streetSegment.Point1.Y * Zoom + 500 + OffsetY * Zoom),
-                    new System.Windows.Point(
-                        streetSegment.Point2.X * Zoom + 500 + OffsetX * Zoom,
-                        streetSegment.Point2.Y * Zoom + 500 + OffsetY * Zoom));
+                //drawingContext.DrawLine(
+                //    pen,
+                //    new System.Windows.Point(
+                //        streetSegment.Point1.X * Zoom + 500 + OffsetX * Zoom,
+                //        streetSegment.Point1.Y * Zoom + 500 + OffsetY * Zoom),
+                //    new System.Windows.Point(
+                //        streetSegment.Point2.X * Zoom + 500 + OffsetX * Zoom,
+                //        streetSegment.Point2.Y * Zoom + 500 + OffsetY * Zoom));
 
                 
             }
@@ -207,8 +240,20 @@ namespace Editor.StreetsEditor
 
         private void RenderNodes(RenderCube cube, DrawingContext drawingContext)
         {
-            drawingContext.DrawRectangle(new SolidColorBrush(Color.FromRgb(200, 200, 200)),
-                new Pen(new SolidColorBrush(Color.FromRgb(0, 0, 0)), 1.0),
+            var minX = (viewportLeft - 500) / Zoom - OffsetX;
+            var maxX = (viewportRight - 500) / Zoom - OffsetX;
+
+            var minY = (viewportTop - 500) / Zoom - OffsetY;
+            var maxY = (viewportBottom - 500) / Zoom - OffsetY;
+
+            if (cube.MaxX < minX || cube.MinX > maxX ||
+                    cube.MaxY < minY || cube.MinY > maxY)
+            {
+                return;
+            }
+
+                drawingContext.DrawRectangle(new SolidColorBrush(Color.FromRgb(200, 200, 200)),
+                pen,
                 new Rect(
                     new System.Windows.Point(cube.MinX * Zoom + 500 + OffsetX * Zoom,
                         cube.MinY * Zoom + 500 + OffsetY * Zoom),
@@ -219,7 +264,37 @@ namespace Editor.StreetsEditor
             {
                 foreach(var i in cube.Children)
                 {
-                    RenderNodes(i, drawingContext);
+
+                    //var minX = (viewportLeft - 500) / Zoom - OffsetX;
+                    //var maxX = (viewportRight - 500) / Zoom - OffsetX;
+
+                    //var minY = (viewportTop - 500) / Zoom - OffsetY;
+                    //var maxY = (viewportBottom - 500) / Zoom - OffsetY;
+
+                    //if (minX < i.MinX && i.MaxX < maxX &&
+                    //    minY < i.MinY && i.MaxY < maxY)
+                    //{
+                        RenderNodes(i, drawingContext);
+                    //}
+                }
+            }
+
+            if (cube.Lines != null)
+            {
+                if (!(cube.MaxX < minX || cube.MinX > maxX ||
+                    cube.MaxY < minY || cube.MinY > maxY))
+                {
+                    foreach (var ln in cube.Lines)
+                    {
+                        drawingContext.DrawLine(
+                        pen,
+                        new System.Windows.Point(
+                            ln.Item1.X * Zoom + 500 + OffsetX * Zoom,
+                            ln.Item1.Y * Zoom + 500 + OffsetY * Zoom),
+                        new System.Windows.Point(
+                            ln.Item2.X * Zoom + 500 + OffsetX * Zoom,
+                            ln.Item2.Y * Zoom + 500 + OffsetY * Zoom));
+                    }
                 }
             }
 

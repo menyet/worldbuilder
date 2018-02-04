@@ -68,7 +68,7 @@ namespace Editor.StreetsEditor.RenderCubes
                     throw new InvalidOperationException("Invalid measures");
                 }
 
-                Console.WriteLine($"Addign line to child {index}");
+                //Console.WriteLine($"Addign line to child {index}");
                 Children[index].Add(line);
             }
             else if (SplitType == SplitType.Horizontal)
@@ -79,6 +79,14 @@ namespace Editor.StreetsEditor.RenderCubes
 
                 var middlePoint = new Point(middleX, middleY, 0);
 
+                var l1 = new Tuple<Point, Point>(p1, new Point(middleX, middleY, 0));
+                var l2 = new Tuple<Point, Point>(p2, new Point(middleX, middleY, 0));
+
+                var index = isPoint1InCube1 ? 0 : 1;
+
+                Children[index].Add(l1);
+                Children[(index + 1) % 2].Add(l2);
+
             }
             else if (SplitType == SplitType.Vertical)
             {
@@ -87,6 +95,15 @@ namespace Editor.StreetsEditor.RenderCubes
                 var middleX = p1.X + (p2.X - p1.X) / (p2.Y - p1.Y) * (middleY - p1.Y);
 
                 var middlePoint = new Point(middleX, middleY, 0);
+
+                var l1 = new Tuple<Point, Point>(p1, new Point(middleX, middleY, 0));
+                var l2 = new Tuple<Point, Point>(p2, new Point(middleX, middleY, 0));
+
+                var index = isPoint1InCube1 ? 0 : 1;
+
+                Children[index].Add(l1);
+                Children[(index + 1) % 2].Add(l2);
+
             }
             else
             {
