@@ -2,7 +2,7 @@
 {
     public enum SplitType
     {
-        Horizontal,
-        Vertical
+        Vertical,
+        Horizontal
     }
 }

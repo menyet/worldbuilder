@@ -82,6 +82,8 @@
     <Compile Include="StreetsEditor\Map.cs" />
     <Compile Include="StreetsEditor\Point.cs" />
     <Compile Include="StreetsEditor\RenderCubes\RenderCube.cs" />
+    <Compile Include="StreetsEditor\RenderCubes\RenderCubesGenerator.cs" />
+    <Compile Include="StreetsEditor\RenderCubes\SplitType.cs" />
     <Compile Include="StreetsEditor\Street.cs" />
     <Compile Include="StreetsEditor\StreetsEditorOptimized.cs" />
     <Compile Include="StreetsEditor\StreetSegment.cs" />

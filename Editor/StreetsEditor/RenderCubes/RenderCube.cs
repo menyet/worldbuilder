@@ -1,16 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Editor.StreetsEditor.RenderCubes
 {
     public class RenderCube
     {
-        public SplitType SplitType { get; set; }
+        public RenderCube(SplitType splitType, string address)
+        {
+            Console.WriteLine($"Creating cube {address}");
 
+            SplitType = splitType;
+            //SplitType = SplitType.Vertical;
 
+            _address = address;
+        }
+
+        public SplitType SplitType { get; }
+
+        private string _address;
+        
         public double MinX { get; set; }
 
         public double MaxX { get; set; }
@@ -23,54 +34,116 @@ namespace Editor.StreetsEditor.RenderCubes
 
         public RenderCube[] Children { get; set; }
 
-        public void Add(Tuple<Point, Point> line)
+        private bool IsInFirstCube(Point p)
         {
-            if (Children != null)
+            switch (SplitType)
+            {
+                case SplitType.Horizontal:
+                    return p.X < (MinX + MaxX) / 2;
+                case SplitType.Vertical:
+                    return p.Y < (MinY + MaxY) / 2;
+            }
+
+            throw new InvalidOperationException("Invalid SplitType");
+        }
+
+        private void AddInternal(Tuple<Point, Point> line)
+        {
+            var p1 = line.Item1;
+            var p2 = line.Item2;
+
+            var isPoint1InCube1 = IsInFirstCube(line.Item1);
+            var isPoint2InCube1 = IsInFirstCube(line.Item2);
+
+            if (isPoint1InCube1 == isPoint2InCube1)
+            {
+                var index = isPoint1InCube1 ? 0 : 1;
+
+                if (line.Item1.Y < Children[index].MinY - double.Epsilon
+                || line.Item2.Y < Children[index].MinY - double.Epsilon
+                || line.Item1.Y > Children[index].MaxY + double.Epsilon
+                || line.Item2.Y > Children[index].MaxY + double.Epsilon
+                )
+                {
+                    throw new InvalidOperationException("Invalid measures");
+                }
+
+                Console.WriteLine($"Addign line to child {index}");
+                Children[index].Add(line);
+            }
+            else if (SplitType == SplitType.Horizontal)
             {
 
+                var middleX = (MinX + MaxX) / 2;
+                var middleY = p1.Y + (p2.Y - p1.Y) / (p2.X - p1.X) * (middleX - p1.X);
+
+                var middlePoint = new Point(middleX, middleY, 0);
+
+            }
+            else if (SplitType == SplitType.Vertical)
+            {
+
+                var middleY = (MinY + MaxY) / 2;
+                var middleX = p1.X + (p2.X - p1.X) / (p2.Y - p1.Y) * (middleY - p1.Y);
+
+                var middlePoint = new Point(middleX, middleY, 0);
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
+
+        }
+
+        public void Add(Tuple<Point, Point> line)
+        {
+            if (line.Item1.Y < MinY - double.Epsilon
+                || line.Item2.Y < MinY - double.Epsilon
+                || line.Item1.Y > MaxY + double.Epsilon
+                || line.Item2.Y > MaxY + double.Epsilon
+                )
+            {
+                throw new InvalidOperationException("Invalid measures");
+            }
+
+            if (Children != null)
+            {
+                AddInternal(line);
+                return;
             }
 
             Lines.Add(line);
 
             if (Lines.Count > 100)
             {
-                var splitType = SplitType == SplitType.Horizontal ?
+                var childSplitType = SplitType == SplitType.Horizontal ?
                     SplitType.Vertical : SplitType.Horizontal;
 
-                Children = new[]
+                //splitType = SplitType.Vertical;
+
+                var c1 = new RenderCube(childSplitType, _address + "1")
                 {
-                    new RenderCube
-                    {
-                        SplitType = splitType,
-                        MinX = MinX,
-                        MinY = MinY,
-                        MaxX = splitType == SplitType.Horizontal ? (MinX + MaxX) / 2 : MaxX,
-                        MaxY = splitType == SplitType.Horizontal ? MaxY : (MinY + MaxY) / 2,
-                    },
-                    new RenderCube
-                    {
-                        SplitType = splitType,
-                        MinX = splitType == SplitType.Horizontal ? MaxX : (MinX + MaxX) / 2.0,
-                        MinY = splitType == SplitType.Horizontal ? (MinY + MaxY) / 2.0 : MaxY,
-                        MaxX = MaxX,
-                        MaxY = MaxY,
-                    }
+                    MinX = MinX,
+                    MinY = MinY,
+                    MaxX = SplitType == SplitType.Horizontal ? (MinX + MaxX) / 2.0 : MaxX,
+                    MaxY = SplitType == SplitType.Horizontal ? MaxY : (MinY + MaxY) / 2.0,
                 };
+                var c2 = new RenderCube(childSplitType, _address + "2")
+                {
+                    MinX = SplitType == SplitType.Horizontal ? (MinX + MaxX) / 2.0 : MinX,
+                    MinY = SplitType == SplitType.Horizontal ? MinY : (MinY + MaxY) / 2.0,
+                    MaxX = MaxX,
+                    MaxY = MaxY,
+                };
+
+                Children = new[] { c1, c2 };
+                foreach (var l in Lines)
+                {
+                    AddInternal(l);
+                }
+
+                Lines.Clear();
             }
-        }
-    }
-
-    public class RenderCubesGenerator
-    {
-        public static RenderCube[] Generate(List<StreetSegment> segments)
-        {
-            var minX = segments.Min(_ => Math.Min(_.Point1.X, _.Point2.X));
-            var maxX = segments.Max(_ => Math.Max(_.Point1.X, _.Point2.X));
-
-            var minY = segments.Min(_ => Math.Min(_.Point1.Y, _.Point2.Y));
-            var maxY = segments.Max(_ => Math.Max(_.Point1.Y, _.Point2.Y));
-
-            return null;
         }
     }
 }

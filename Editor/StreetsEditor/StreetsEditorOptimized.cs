@@ -12,6 +12,7 @@ namespace Editor.StreetsEditor
     using System.Windows.Media;
 
     using Editor.OpenStreetMapImporter;
+    using Editor.StreetsEditor.RenderCubes;
 
     public class StreetsEditorOptimized : FrameworkElement
     {
@@ -22,6 +23,8 @@ namespace Editor.StreetsEditor
             get { return (Map)GetValue(MapProperty); }
             set { SetValue(MapProperty, value); }
         }
+
+        private RenderCubes.RenderCube MainCube { get; }
 
         public static readonly DependencyProperty ZoomProperty = DependencyProperty.Register(
             "Zoom", typeof(double), typeof(StreetsEditor), new FrameworkPropertyMetadata(1.0, FrameworkPropertyMetadataOptions.AffectsMeasure));
@@ -69,6 +72,8 @@ namespace Editor.StreetsEditor
 
             OffsetY = (Map.StreetList.Max(_ => _.Point1.Y) - Map.StreetList.Min(_ => _.Point1.Y)) / 2
                 - Map.StreetList.Max(_ => _.Point1.Y);
+
+            MainCube = RenderCubesGenerator.Generate(Map.StreetList);
         }
 
         private void OnMouseWheel(object sender, MouseWheelEventArgs e)
@@ -159,7 +164,7 @@ namespace Editor.StreetsEditor
                 new Pen(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), 1.0),
                 new Rect(0, 0, ActualWidth, ActualHeight));
 
-             
+            RenderNodes(MainCube, drawingContext);
 
 
 
@@ -192,9 +197,31 @@ namespace Editor.StreetsEditor
                     new System.Windows.Point(
                         streetSegment.Point2.X * Zoom + 500 + OffsetX * Zoom,
                         streetSegment.Point2.Y * Zoom + 500 + OffsetY * Zoom));
+
+                
             }
 
             //drawingContext.DrawLine(new Pen(new SolidColorBrush(Color.FromRgb(0, 0, 0)), 1.0), new System.Windows.Point(0, 0), new System.Windows.Point(100, 100));
+
+        }
+
+        private void RenderNodes(RenderCube cube, DrawingContext drawingContext)
+        {
+            drawingContext.DrawRectangle(new SolidColorBrush(Color.FromRgb(200, 200, 200)),
+                new Pen(new SolidColorBrush(Color.FromRgb(0, 0, 0)), 1.0),
+                new Rect(
+                    new System.Windows.Point(cube.MinX * Zoom + 500 + OffsetX * Zoom,
+                        cube.MinY * Zoom + 500 + OffsetY * Zoom),
+                    new System.Windows.Point(cube.MaxX * Zoom + 500 + OffsetX * Zoom,
+                        cube.MaxY * Zoom + 500 + OffsetY * Zoom)));
+
+            if (cube.Children != null)
+            {
+                foreach(var i in cube.Children)
+                {
+                    RenderNodes(i, drawingContext);
+                }
+            }
 
         }
     }
