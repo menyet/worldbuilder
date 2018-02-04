@@ -8,6 +8,9 @@ namespace Editor.StreetsEditor.RenderCubes
 {
     public class RenderCube
     {
+        public SplitType SplitType { get; set; }
+
+
         public double MinX { get; set; }
 
         public double MaxX { get; set; }
@@ -16,7 +19,45 @@ namespace Editor.StreetsEditor.RenderCubes
 
         public double MaxY { get; set; }
 
-        public List<StreetSegment> StreetSegments { get; set; }
+        public List<Tuple<Point, Point>> Lines { get; } = new List<Tuple<Point, Point>>();
+
+        public RenderCube[] Children { get; set; }
+
+        public void Add(Tuple<Point, Point> line)
+        {
+            if (Children != null)
+            {
+
+            }
+
+            Lines.Add(line);
+
+            if (Lines.Count > 100)
+            {
+                var splitType = SplitType == SplitType.Horizontal ?
+                    SplitType.Vertical : SplitType.Horizontal;
+
+                Children = new[]
+                {
+                    new RenderCube
+                    {
+                        SplitType = splitType,
+                        MinX = MinX,
+                        MinY = MinY,
+                        MaxX = splitType == SplitType.Horizontal ? (MinX + MaxX) / 2 : MaxX,
+                        MaxY = splitType == SplitType.Horizontal ? MaxY : (MinY + MaxY) / 2,
+                    },
+                    new RenderCube
+                    {
+                        SplitType = splitType,
+                        MinX = splitType == SplitType.Horizontal ? MaxX : (MinX + MaxX) / 2.0,
+                        MinY = splitType == SplitType.Horizontal ? (MinY + MaxY) / 2.0 : MaxY,
+                        MaxX = MaxX,
+                        MaxY = MaxY,
+                    }
+                };
+            }
+        }
     }
 
     public class RenderCubesGenerator
