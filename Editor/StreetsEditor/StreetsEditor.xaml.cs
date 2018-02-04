@@ -55,7 +55,7 @@ namespace Editor.StreetsEditor
         {
             //Map = new Map();
 
-            Map = new Importer().Import("D:\\map.osm");
+            Map = new Importer().Import("C:\\map\\map.osm");
 
             /*Point point1 = new Point(100, 100,0);
             Point point2 = new Point(200, 100, 0);

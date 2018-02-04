@@ -58,26 +58,23 @@ namespace Editor.StreetsEditor
 
         public StreetsEditorOptimized()
         {
-            Map = new Importer().Import("D:\\map.osm");
+            Map = new Importer().Import("C:\\map\\map.osm");
             
             MouseMove += OnMouseMove;
             MouseDown += OnMouseDown;
             MouseWheel += OnMouseWheel;
 
+            OffsetX = (Map.StreetList.Max(_ => _.Point1.X) - Map.StreetList.Min(_ => _.Point1.X)) / 2
+                - Map.StreetList.Max(_ => _.Point1.X);
+
+            OffsetY = (Map.StreetList.Max(_ => _.Point1.Y) - Map.StreetList.Min(_ => _.Point1.Y)) / 2
+                - Map.StreetList.Max(_ => _.Point1.Y);
         }
 
         private void OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (e.Delta > 0)
-            {
-                Zoom += 0.1;
-            }
-            else
-            {
-                Zoom -= 0.1;
-            }
-
-            this.InvalidateVisual();
+            Zoom += 0.001 * e.Delta;
+            InvalidateVisual();
         }
 
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
@@ -187,7 +184,14 @@ namespace Editor.StreetsEditor
 
                 }
 
-                drawingContext.DrawLine(new Pen(new SolidColorBrush(Color.FromRgb(0, 0, 0)), 1.0), new System.Windows.Point(streetSegment.Point1.X * Zoom + OffsetX, streetSegment.Point1.Y * Zoom + 500 + OffsetY), new System.Windows.Point(streetSegment.Point2.X * Zoom + OffsetX, streetSegment.Point2.Y * Zoom + 500 + OffsetY));
+                drawingContext.DrawLine(
+                    new Pen(new SolidColorBrush(Color.FromRgb(0, 0, 0)), 1.0),
+                    new System.Windows.Point(
+                        streetSegment.Point1.X * Zoom + 500 + OffsetX * Zoom,
+                        streetSegment.Point1.Y * Zoom + 500 + OffsetY * Zoom),
+                    new System.Windows.Point(
+                        streetSegment.Point2.X * Zoom + 500 + OffsetX * Zoom,
+                        streetSegment.Point2.Y * Zoom + 500 + OffsetY * Zoom));
             }
 
             //drawingContext.DrawLine(new Pen(new SolidColorBrush(Color.FromRgb(0, 0, 0)), 1.0), new System.Windows.Point(0, 0), new System.Windows.Point(100, 100));
